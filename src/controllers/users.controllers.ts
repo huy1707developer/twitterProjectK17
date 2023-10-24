@@ -5,21 +5,19 @@ import usersService from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { RegisterReqBody } from '~/models/requests/User.request'
 
-export const loginController = (req: Request, res: Response) => {
-  // đây là controller
-  const { email, password } = req.body
+export const loginController = async (req: Request, res: Response) => {
+  // lấy user_id từ user của req
+  const { user }: any = req
+  const user_id = user._id //đây là object ID
 
-  if (email === 'test@gmail.com' && password === '123') {
-    return res.json({
-      data: [
-        { fname: 'Điệp', yob: 1999 },
-        { fname: 'Huy', yob: 2003 },
-        { fname: 'Minh', yob: 2000 }
-      ]
-    })
-  }
-  return res.status(400).json({
-    error: 'login failed'
+  // dùng user_id tạo access_token và refesh_token
+  const result = await usersService.login(user_id.toString())
+  // tại nó là object -> chuyển thành string mới chuyển qua pram kia dc
+
+  //response access_token và refesh_token cho client
+  res.json({
+    message: 'Login successfully',
+    result
   })
 }
 
@@ -27,16 +25,19 @@ export const registerController = async (req: Request<ParamsDictionary, any, Reg
   // định nghĩa rõ ràng cụ thể cho thằng request
   // const { email, password, name } = req.body
   // nhu cầu tạo nhiều hơn là 2 thuộc tính -> bỏ thẳng vô  register luôn
-  try {
-    const result = await usersService.register(req.body)
-    res.json({
-      message: 'register successfully',
-      result
-    })
-  } catch (error) {
-    res.status(400).json({
-      message: 'register failed',
-      error
-    })
-  }
+  // throw new Error('Lôi nè')
+
+  const result = await usersService.register(req.body)
+  res.json({
+    message: 'register successfully',
+    result
+  })
 }
+
+// thằng bắt lỗi ko nên nằm ở đây
+// bắt buộc phải quăng lỗi về 1 chỗ error handler để xử lí chung
+
+// res.status(400).json({
+//   message: 'register failed',
+//   error
+// })

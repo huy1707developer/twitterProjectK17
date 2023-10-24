@@ -24,6 +24,11 @@ class UsersService {
     })
   }
 
+  //ký access_token và refesh_token
+  private signAccessTokenAndsignRefreshToken(user_id: string) {
+    return Promise.all([this.signAccessToken(user_id), this.signRefreshToken(user_id)])
+  }
+
   async register(payload: RegisterReqBody) {
     // định nghĩa thẳng luôn để có đủ các thuộc tính để tạo đối tượng user
     //payload là dữ liệu được đưa lên đưa về
@@ -40,10 +45,7 @@ class UsersService {
     // laasy usser id từ account vừa tạo bằng cách
     const user_id = result.insertedId.toString()
     // từ user_id tạo ra 1 access token và 1 refresh token
-    const [access_token, refresh_token] = await Promise.all([
-      this.signAccessToken(user_id),
-      this.signRefreshToken(user_id)
-    ])
+    const [access_token, refresh_token] = await this.signAccessTokenAndsignRefreshToken(user_id)
     return { access_token, refresh_token }
   }
   // cách tìm id bằng token qua mongoDB
@@ -52,6 +54,12 @@ class UsersService {
   async checkEmailExist(email: string) {
     const user = await databaseService.users.findOne({ email })
     return Boolean(user)
+  }
+
+  async login(user_id: string) {
+    //dùng user_id tạo access_token và refesh_token
+    const [access_token, refresh_token] = await this.signAccessTokenAndsignRefreshToken(user_id)
+    return { access_token, refresh_token }
   }
 }
 
