@@ -212,9 +212,6 @@ export const accessTokenValidator = validate(
     {
       Authorization: {
         trim: true,
-        notEmpty: {
-          errorMessage: USERS_MESSAGES.ACCESS_TOKEN_IS_REQUIRED
-        },
         custom: {
           options: async (value: string, { req }) => {
             const access_token = value.split(' ')[1] // băm nó ra lấy vị trí số 1
@@ -226,7 +223,10 @@ export const accessTokenValidator = validate(
             }
             try {
               //1. kiểm tra token (verify) có phải của server tạo ra không?
-              const decoded_authorization = await verifyToken({ token: access_token })
+              const decoded_authorization = await verifyToken({
+                token: access_token,
+                secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
+              })
               // lưu lại payload hay là decoded vào request
               ;(req as Request).decoded_authorization = decoded_authorization
               //------------ lưu ý phải có dấy ; -------------------------------------------
@@ -252,14 +252,14 @@ export const refreshTokenValidator = validate(
     {
       refresh_token: {
         trim: true,
-        notEmpty: {
-          errorMessage: USERS_MESSAGES.REFRESH_TOKEN_IS_REQUIRED
-        },
         custom: {
           options: async (value: string, { req }) => {
             try {
               //1. kiểm tra refresh_token(value) (verify) có phải của server tạo ra không?
-              const decoded_refresh_token = await verifyToken({ token: value })
+              const decoded_refresh_token = await verifyToken({
+                token: value,
+                secretOrPublicKey: process.env.JWT_SECRET_REFRESH_TOKEN as string
+              })
               // ktra token còn trong database nữa ko
 
               const refresh_token = await databaseService.refreshTokens.findOne({ token: value })
@@ -291,6 +291,50 @@ export const refreshTokenValidator = validate(
               // tại lỗi này do server tạo ra nên đã định nghĩa từ trước rồi
               // ko cần xử lí nữa nên cần quăng thẳng ra luôn
               // một phần tránh việc bị ghi đè bởi cái lỗi được set cái lỗi phái bên dưới
+              throw error
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
+
+export const emailVerifyTokenValidator = validate(
+  checkSchema(
+    {
+      email_verify_token: {
+        trim: true,
+        custom: {
+          options: async (value: string, { req }) => {
+            //kiểm tra người dùng có truyền lên email_verify_token không
+            if (!value) {
+              throw new ErrorWithStatus({
+                message: USERS_MESSAGES.EMAIL_VERIFY_TOKEN_IS_REQUIRED,
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
+
+            //verify email_verify_token để lấy decoded_email_verify_token
+            try {
+              const decoded_email_verify_token = await verifyToken({
+                token: value,
+                secretOrPublicKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string
+              })
+              //sau khi verify ta được pay load của email_verify_token: decoded_email_verify
+              ;(req as Request).decoded_email_verify_token = decoded_email_verify_token
+            } catch (error) {
+              //nếu lỗi phát sinh trong quá trình verify thì mình tạo thành lỗi có status
+              if (error instanceof JsonWebTokenError) {
+                throw new ErrorWithStatus({
+                  // vì cái lỗi (error)tự phát sinh chưa chắc chắn  có message nên ko dùng error.message được
+                  message: capitalize((error as JsonWebTokenError).message), // mình biết là lỗi gì nên định nghĩa lỗi luôn
+                  //capitalize viết hoa chữ cái đầu
+                  status: HTTP_STATUS.UNAUTHORIZED
+                })
+              }
               throw error
             }
             return true
