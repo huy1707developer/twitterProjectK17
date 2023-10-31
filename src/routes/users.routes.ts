@@ -2,17 +2,23 @@ import { Router } from 'express'
 import {
   accessTokenValidator,
   emailVerifyTokenValidator,
+  forgotPasswordValidator,
   loginValidator,
   refreshTokenValidator,
-  registerValidator
+  registerValidator,
+  verifyForgotPasswordTokenValidator
 } from '~/middlewares/users.middlewares'
 import {
   emailVerifyTokenController,
+  forgotPasswordController,
   loginController,
   logoutController,
-  registerController
+  registerController,
+  resendEmailVerifyController,
+  verifyForgotPasswordController
 } from '~/controllers/users.controllers'
 import { wrapAsync } from '~/utils/handlers'
+import { verify } from 'crypto'
 
 const usersRouter = Router()
 
@@ -66,7 +72,45 @@ body: {refresh_token: string}
   body: {email_verify_token: string}
 */
 usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapAsync(emailVerifyTokenController))
-//registerController
+
+/*
+  des: resend emal verify tokn
+  khi mail thất lạc hoặc email_verify_token hết hạn , thì gnuowif dùng có
+  nhu cầu resend email_verify_token
+
+  method: POST
+  path: /users/resend-email-verify
+  headers:{Authorization: "Bearer <access_token>"} // đăng nhập mới được resend
+  body: {}
+*/
+usersRouter.post('/resend-email-verify', accessTokenValidator, wrapAsync(resendEmailVerifyController))
+
+/*
+  des: khi người dùng quên mật khẩu họ gửi email để xin mình tạo cho họ một forgot_password_token
+  path: /users/forgot-password
+  method: POST
+  body: {email: string}
+
+*/
+
+usersRouter.post('/forgot-password', forgotPasswordValidator, wrapAsync(forgotPasswordController))
+
+/*
+  des: khi người dùng nhấp vào link trong email để reset password
+  họ sẽ gửi 1 req kèm theo forgor_pasword_token lên server
+  server sẽ kiểm tra forgor_pasword_token có hợp lê không
+  sau đó chuyển hướng người dùng đến reset password
+  path: /users/verify-forgot-password
+  method: POST
+  body: {forgor_pasword_token}
+*/
+
+usersRouter.post(
+  '/verify-forgot-password',
+  verifyForgotPasswordTokenValidator,
+  wrapAsync(verifyForgotPasswordController)
+)
+
 export default usersRouter
 
 //-0--------------------
