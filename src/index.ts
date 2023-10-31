@@ -1,4 +1,3 @@
-import { connect } from 'http2'
 import express, { NextFunction, Response, Request } from 'express'
 import usersRouter from './routes/users.routes'
 import databaseService from './services/database.services'

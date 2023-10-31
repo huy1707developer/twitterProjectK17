@@ -5,6 +5,9 @@ import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
 import { TokenType } from '~/constants/enums'
 import { config } from 'dotenv'
+import RefreshToken from '~/models/schemas/RefreshToken.schema'
+import { ObjectId } from 'mongodb'
+import { USERS_MESSAGES } from '~/constants/messages'
 config()
 
 class UsersService {
@@ -29,6 +32,11 @@ class UsersService {
     return Promise.all([this.signAccessToken(user_id), this.signRefreshToken(user_id)])
   }
 
+  async checkEmailExist(email: string) {
+    const user = await databaseService.users.findOne({ email })
+    return Boolean(user)
+  }
+
   async register(payload: RegisterReqBody) {
     // định nghĩa thẳng luôn để có đủ các thuộc tính để tạo đối tượng user
     //payload là dữ liệu được đưa lên đưa về
@@ -46,20 +54,37 @@ class UsersService {
     const user_id = result.insertedId.toString()
     // từ user_id tạo ra 1 access token và 1 refresh token
     const [access_token, refresh_token] = await this.signAccessTokenAndsignRefreshToken(user_id)
+    //lưu refresh_token vào database
+    await databaseService.refreshTokens.insertOne(
+      new RefreshToken({
+        token: refresh_token,
+        user_id: new ObjectId(user_id)
+      })
+    )
     return { access_token, refresh_token }
   }
   // cách tìm id bằng token qua mongoDB
   //{_id: ObjectId('6531412daccdb52cb23acb65')}
 
-  async checkEmailExist(email: string) {
-    const user = await databaseService.users.findOne({ email })
-    return Boolean(user)
-  }
-
   async login(user_id: string) {
     //dùng user_id tạo access_token và refesh_token
     const [access_token, refresh_token] = await this.signAccessTokenAndsignRefreshToken(user_id)
+    //lưu refresh_token vào database
+    await databaseService.refreshTokens.insertOne(
+      new RefreshToken({
+        token: refresh_token,
+        user_id: new ObjectId(user_id)
+      })
+    )
     return { access_token, refresh_token }
+  }
+
+  async logout(refresh_token: string) {
+    //dùng refresh_token tìm và xóa
+    await databaseService.refreshTokens.deleteOne({ token: refresh_token })
+    return {
+      message: USERS_MESSAGES.LOGOUT_SUCCESS
+    }
   }
 }
 

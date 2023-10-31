@@ -1,6 +1,6 @@
 import HTTP_STATUS from '~/constants/httpStatus'
 import { USERS_MESSAGES } from '~/constants/messages'
-
+// ở đây lưu định nghĩa của 1 lỗi là như nào
 //ở đây thường mình sẽ extend Error để nhận đc báo lỗi ở dòng nào
 type ErrorsType = Record<
   string,
