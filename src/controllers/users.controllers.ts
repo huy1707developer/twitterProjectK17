@@ -2,7 +2,13 @@ import { Request, Response } from 'express'
 import User from '~/models/schemas/User.schema'
 import usersService from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { LogoutReqBody, RegisterReqBody, TokenPayload, VerifyEmailReqBody } from '~/models/requests/User.request'
+import {
+  LogoutReqBody,
+  RegisterReqBody,
+  ResetPasswordReqBody,
+  TokenPayload,
+  VerifyEmailReqBody
+} from '~/models/requests/User.request'
 import { ObjectId } from 'mongodb'
 import { USERS_MESSAGES } from '~/constants/messages'
 import databaseService from '~/services/database.services'
@@ -140,4 +146,17 @@ export const verifyForgotPasswordController = async (req: Request, res: Response
   return res.json({
     message: USERS_MESSAGES.VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESS
   })
+}
+
+export const resetPasswordController = async (
+  req: Request<ParamsDictionary, any, ResetPasswordReqBody>,
+  res: Response
+) => {
+  const { user_id } = req.decoded_forgot_password_token as TokenPayload
+  const { password } = req.body // nếu có sử dụng tới body thì phải định nghĩa lại body nếu ko nó là any thì ko có hay
+  //-> định nghĩa ngay phía parameter và user.request
+
+  //dùng user_id tìm user và update lại password
+  const result = await usersService.resetPassword({ user_id, password })
+  return res.json(result)
 }

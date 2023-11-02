@@ -6,6 +6,7 @@ import {
   loginValidator,
   refreshTokenValidator,
   registerValidator,
+  resetPasswordValidator,
   verifyForgotPasswordTokenValidator
 } from '~/middlewares/users.middlewares'
 import {
@@ -15,6 +16,7 @@ import {
   logoutController,
   registerController,
   resendEmailVerifyController,
+  resetPasswordController,
   verifyForgotPasswordController
 } from '~/controllers/users.controllers'
 import { wrapAsync } from '~/utils/handlers'
@@ -47,8 +49,6 @@ usersRouter.get('/login', loginValidator, wrapAsync(loginController))
 usersRouter.post('/register', registerValidator, wrapAsync(registerController))
 
 //-------------------------
-usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapAsync(logoutController))
-
 /*
 mô tả thông tin của logout
 des: đăng xuất
@@ -58,8 +58,9 @@ Header{Authorization: 'Bear <access_token>'}
 body: {refresh_token: string}
 
 */
+usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapAsync(logoutController))
 
-//----------------------------------------
+//----------------------------------------Buoi 30 ----------------------------------------------
 /*
   des: verify email token
   khi người dùng đăng kí họ sẽ nhận được mai có link dạng
@@ -111,6 +112,22 @@ usersRouter.post(
   wrapAsync(verifyForgotPasswordController)
 )
 
+//---------------------------------------------------buoi 31---------------------------------------------------
+/*
+des: reset password
+path: '/reset-password'
+method: POST
+Header: không cần, vì  ngta quên mật khẩu rồi, thì sao mà đăng nhập để có authen đc
+body: {forgot_password_token: string, password: string, confirm_password: string}
+*/
+usersRouter.post(
+  '/reset-password',
+  resetPasswordValidator,
+  verifyForgotPasswordTokenValidator,
+  wrapAsync(resetPasswordController)
+)
+
+//-----------------------------------------------------------------------------------------------------------------
 export default usersRouter
 
 //-0--------------------
