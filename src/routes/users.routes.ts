@@ -12,6 +12,7 @@ import {
 import {
   emailVerifyTokenController,
   forgotPasswordController,
+  getMeController,
   loginController,
   logoutController,
   registerController,
@@ -126,6 +127,15 @@ usersRouter.post(
   verifyForgotPasswordTokenValidator,
   wrapAsync(resetPasswordController)
 )
+
+/*
+des: get profile của user
+path: '/me'
+method: get
+Header: {Authorization: Bearer <access_token>}
+body: {}
+*/
+usersRouter.get('/me', accessTokenValidator, wrapAsync(getMeController))
 
 //-----------------------------------------------------------------------------------------------------------------
 export default usersRouter

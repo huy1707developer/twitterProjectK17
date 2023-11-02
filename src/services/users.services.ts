@@ -187,6 +187,22 @@ class UsersService {
       message: USERS_MESSAGES.RESET_PASSWORD_SUCCESS
     }
   }
+
+  async getMe(user_id: string) {
+    const user = await databaseService.users.findOne(
+      { _id: new ObjectId(user_id) },
+      {
+        projection: {
+          password: 0,
+          email_verify_token: 0,
+          forgot_password_token: 0
+        }
+      }
+      // projection là để dấu mấy cái thuộc tính trên ko hiển thị ra màn hình
+      //-> để số 0 là ko hiển thị
+    )
+    return user // sẽ k có những thuộc tính nêu trên, tránh bị lộ thông tin
+  }
 }
 
 const usersService = new UsersService()
