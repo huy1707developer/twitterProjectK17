@@ -1,7 +1,8 @@
+import { getProfileController } from './../../controllers/users.controllers'
 //định nghĩa những request body | param | query
 
 import { JwtPayload } from 'jsonwebtoken'
-import { TokenType } from '~/constants/enums'
+import { TokenType, UserVerifyStatus } from '~/constants/enums'
 
 //định nghĩa trong body request có những cái gì
 export interface RegisterReqBody {
@@ -19,6 +20,7 @@ export interface LogoutReqBody {
 export interface TokenPayload extends JwtPayload {
   user_id: string
   token_type: TokenType
+  verify: UserVerifyStatus
 }
 
 export interface VerifyEmailReqBody {
@@ -29,4 +31,19 @@ export interface ResetPasswordReqBody {
   forgot_password_token: string
   password: string
   confirm_password: string
+}
+
+export interface UpdateMeReqBody {
+  name?: string
+  date_of_birth?: string //vì ngta truyền lên string dạng ISO8601, k phải date
+  bio?: string
+  location?: string
+  website?: string
+  username?: string
+  avatar?: string
+  cover_photo?: string
+}
+
+export interface getProfileReqParams {
+  username: string
 }
