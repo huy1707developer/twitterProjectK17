@@ -58,3 +58,8 @@ export interface UnfollowReqParams extends ParamsDictionary {
 }
 
 // muốn định nghĩa param nên extends ParamsDictionary
+export interface ChangePasswordReqBody {
+  old_password: string
+  password: string
+  confirm_password: string
+}
