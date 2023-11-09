@@ -1,3 +1,4 @@
+import { ParamsDictionary } from 'express-serve-static-core'
 import { getProfileController } from './../../controllers/users.controllers'
 //định nghĩa những request body | param | query
 
@@ -44,6 +45,16 @@ export interface UpdateMeReqBody {
   cover_photo?: string
 }
 
-export interface getProfileReqParams {
+export interface getProfileReqParams extends ParamsDictionary {
   username: string
 }
+
+export interface FollowReqBody {
+  followed_user_id: string
+}
+
+export interface UnfollowReqParams extends ParamsDictionary {
+  user_id: string
+}
+
+// muốn định nghĩa param nên extends ParamsDictionary
