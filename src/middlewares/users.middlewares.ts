@@ -657,6 +657,7 @@ export const changePasswordValidator = validate(
                 status: HTTP_STATUS.UNAUTHORIZED //401
               })
             }
+            return true
           }
         }
       },
