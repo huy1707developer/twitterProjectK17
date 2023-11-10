@@ -1,10 +1,12 @@
-import { uploadSingleImageController } from '~/controllers/medias.controllers'
+import { uploadSingleImageController, uploadVideoController } from '~/controllers/medias.controllers'
 import { Router } from 'express'
 import { wrapAsync } from '~/utils/handlers'
+import { accessTokenValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
 const mediasRouter = Router()
 
 mediasRouter.post('/upload-image', wrapAsync(uploadSingleImageController))
 
-export default mediasRouter
+///--------------------------------------------Buôi 33-------------------------------------------
+mediasRouter.post('/upload-video', accessTokenValidator, verifiedUserValidator, wrapAsync(uploadVideoController)) // uploadVideoController chưa làm
 
-//uploadSingleImageController chưa làm
+export default mediasRouter

@@ -37,6 +37,13 @@ class DatabaseService {
     // cho nó biết chính là string
   }
 
+  async indexUsers() {
+    // unique để tìm kiếm không trùng username và email
+    await this.users.createIndex({ username: 1 }, { unique: true })
+    await this.users.createIndex({ email: 1 }, { unique: true })
+    await this.users.createIndex({ email: 1, password: 1 })
+  }
+
   get refreshTokens(): Collection<RefreshToken> {
     return this.db.collection(process.env.DB_REFRESH_TOKENS_COLLECTION as string)
   }
