@@ -2,9 +2,13 @@ import express, { NextFunction, Response, Request } from 'express'
 import usersRouter from './routes/users.routes'
 import databaseService from './services/database.services'
 import { defaultErrorHandler } from './middlewares/error.middlewares'
+import mediasRouter from './routes/medias.routes'
+import { initFolder } from './utils/file'
 const app = express()
 app.use(express.json())
 const PORT = 4000
+
+initFolder()
 databaseService.connect()
 //route mặc định
 app.get('/', (req, res) => {
@@ -12,6 +16,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/users', usersRouter)
+app.use('/medias', mediasRouter)
 
 //bắt lỗi tổng
 app.use(defaultErrorHandler)
