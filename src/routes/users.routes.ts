@@ -23,6 +23,7 @@ import {
   getProfileController,
   loginController,
   logoutController,
+  oAuthController,
   refreshTokenController,
   registerController,
   resendEmailVerifyController,
@@ -177,6 +178,8 @@ không cần header vì, chưa đăng nhập cũng có thể xem
 */
 usersRouter.get('/:username', wrapAsync(getProfileController))
 //chưa có controller getProfileController, nên bây giờ ta làm
+
+usersRouter.get('/oauth/google', wrapAsync(oAuthController))
 //-------------------------------------------------Buoi 32-------------------------------------------------------------
 
 /*

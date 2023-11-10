@@ -4,7 +4,7 @@ import databaseService from './services/database.services'
 import { defaultErrorHandler } from './middlewares/error.middlewares'
 const app = express()
 app.use(express.json())
-const PORT = 3000
+const PORT = 4000
 databaseService.connect()
 //route mặc định
 app.get('/', (req, res) => {
@@ -24,7 +24,7 @@ app.use(defaultErrorHandler)
 //-> đã chuyển qua error.middlewares.ts
 
 app.listen(PORT, () => {
-  console.log(`Sever đang mo tren port ${3000}`)
+  console.log(`Sever đang mo tren port ${PORT}`)
 })
 
 //http://localhost:3000/users/tweets
