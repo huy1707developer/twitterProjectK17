@@ -2,10 +2,9 @@ import { Request, Response, NextFunction } from 'express'
 import formidable from 'formidable'
 import path from 'path'
 import { USERS_MESSAGES } from '~/constants/messages'
-import { handleUploadSingleImage } from '~/utils/file'
 import { config } from 'dotenv'
 import mediasService from '~/services/medias.services'
-import { UPLOAD_VIDEO_DIR } from '~/constants/dir'
+import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from '~/constants/dir'
 import HTTP_STATUS from '~/constants/httpStatus'
 import fs from 'fs'
 import mime from 'mime'
@@ -14,11 +13,23 @@ config() //để xài đc biến môi trường
 // console.log(path.resolve()) //D:\toturalReact2022\nodejs-backend\ch04-tweetProject
 // console.log(path.resolve('uploads')) //D:\toturalReact2022\nodejs-backend\ch04-tweetProject\uploads
 
-export const uploadSingleImageController = async (req: Request, res: Response) => {
-  const data = await handleUploadSingleImage(req)
+export const uploadImageController = async (req: Request, res: Response) => {
+  const url = await mediasService.uploadImage(req)
   return res.json({
-    result: data
+    message: USERS_MESSAGES.UPLOAD_SUCCESS,
+    result: url
   })
+}
+
+//khỏi async vì có đợi gì đâu
+export const serveImageController = (req: Request, res: Response, next: NextFunction) => {
+  const { namefile } = req.params //lấy namefile từ param string
+  res.sendFile(path.resolve(UPLOAD_IMAGE_DIR, namefile), (error) => {
+    //console.log(error) //xem lỗi trong như nào, nếu ta bỏ sai tên file / xem xong nhớ cmt lại cho đở rối terminal
+    if (error) {
+      return res.status((error as any).status).send('File not found')
+    }
+  }) //trả về file
 }
 
 //-------------------------------------------------- video controller------------Buoi 33-------------------------

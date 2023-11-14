@@ -7,10 +7,12 @@ import { initFolder } from './utils/file'
 import staticRouter from './routes/static.routes'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import { MongoClient } from 'mongodb'
+import { config } from 'dotenv'
+
+config()
 const app = express()
 app.use(express.json())
-const PORT = 4000
-const port = process.env.PORT || 4000
+const PORT = process.env.PORT || 4000
 initFolder()
 
 // app.use(express.json()) //app handler
@@ -18,7 +20,7 @@ databaseService.connect().then(() => {
   databaseService.indexUsers()
 })
 
-databaseService.connect()
+// databaseService.connect()
 //route mặc định
 app.get('/', (req, res) => {
   res.send('hello world')

@@ -17,12 +17,25 @@ export const initFolder = () => {
   })
 }
 
-export const handleUploadSingleImage = async (req: Request) => {
+//viết thêm hàm khi nhận filename : abv.png thì chỉ lấy abv để sau này ta gán thêm đuôi .jpeg
+export const getNameFromFullname = (filename: string) => {
+  const nameArr = filename.split('.')
+  nameArr.pop() //xóa phần tử cuối cùng, tức là xóa đuôi .png
+  return nameArr.join('') //nối lại thành chuỗi
+}
+
+//làm lấy đuôi mở rộng của file
+export const getExtension = (filename: string) => {
+  const nameArr = filename.split('.')
+  return nameArr[nameArr.length - 1]
+}
+
+export const handleUploadImage = async (req: Request) => {
   const form = formidable({
-    uploadDir: path.resolve('uploads'), //lưu ở đâu
-    maxFiles: 1, //tối đa bao nhiêu
+    uploadDir: path.resolve(UPLOAD_IMAGE_TEMP_DIR), //lưu ở đâu
+    maxFiles: 4, //tối đa bao nhiêu
     keepExtensions: true, //có lấy đuôi mở rộng không .png, .jpg
-    maxFileSize: 300 * 1024, //tối đa bao nhiêu byte, 300kb
+    maxFileSize: 300 * 1024 * 4, //tối đa bao nhiêu byte, 300kb
     //xài option filter để kiểm tra file có phải là image không
     filter: function ({ name, originalFilename, mimetype }) {
       //name: name|key truyền vào của <input name = bla bla>
@@ -55,12 +68,6 @@ export const handleUploadSingleImage = async (req: Request) => {
       return resolve(files.image as File[])
     })
   })
-}
-
-//làm lấy đuôi mở rộng của file
-export const getExtension = (filename: string) => {
-  const nameArr = filename.split('.')
-  return nameArr[nameArr.length - 1]
 }
 
 export const handleUploadVideo = async (req: Request) => {
