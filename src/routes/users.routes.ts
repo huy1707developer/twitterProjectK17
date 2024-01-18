@@ -35,7 +35,7 @@ import {
 import { wrapAsync } from '~/utils/handlers'
 import { verify } from 'crypto'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
-import { UpdateMeReqBody } from '~/models/requests/User.request'
+import { UpdateMeReqBody } from '~/models/requests/User.requests'
 
 const usersRouter = Router()
 

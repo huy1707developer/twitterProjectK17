@@ -1,5 +1,5 @@
 import { ParamsDictionary } from 'express-serve-static-core'
-import { getProfileController } from './../../controllers/users.controllers'
+import { getProfileController } from '../../controllers/users.controllers'
 //định nghĩa những request body | param | query
 
 import { JwtPayload } from 'jsonwebtoken'

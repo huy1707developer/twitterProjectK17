@@ -4,6 +4,7 @@ import { config } from 'dotenv'
 import User from '~/models/schemas/User.schema'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import { Follower } from '~/models/schemas/Followers.schema'
+import Tweet from '~/models/schemas/Tweet.schema'
 config()
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@tweetprojectpiedteam.tr4ovqn.mongodb.net/?retryWrites=true&w=majority`
@@ -38,6 +39,12 @@ class DatabaseService {
   }
 
   async indexUsers() {
+    const exists = await this.users.indexExists([
+      'username_1',
+      'email_1',
+      'email_1_password_1'
+    ])
+    if (exists) return
     // unique để tìm kiếm không trùng username và email
     await this.users.createIndex({ username: 1 }, { unique: true })
     await this.users.createIndex({ email: 1 }, { unique: true })
@@ -50,6 +57,24 @@ class DatabaseService {
 
   get followers(): Collection<Follower> {
     return this.db.collection(process.env.DB_FOLLOWERS_COLLECTION as string)
+  }
+
+  async indexRefreshTokens() {
+    const exists = await this.refreshTokens.indexExists(['token_1', 'exp_1'])
+    if (exists) return
+    this.refreshTokens.createIndex({ token: 1 })
+    //đây là ttl index , sẽ tự động xóa các document khi hết hạn của exp
+    this.refreshTokens.createIndex({ exp: 1 }, { expireAfterSeconds: 0 })
+  }
+
+  async indexFollowers() {
+    const exists = await this.followers.indexExists(['user_id_1_followed_user_id_1'])
+    if (exists) return
+    this.followers.createIndex({ user_id: 1, followed_user_id: 1 })
+  }
+
+  get tweets(): Collection<Tweet> {
+    return this.db.collection(process.env.DB_TWEETS_COLLECTION as string)
   }
 }
 const databaseService = new DatabaseService()

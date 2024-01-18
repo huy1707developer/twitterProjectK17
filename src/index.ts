@@ -8,6 +8,7 @@ import staticRouter from './routes/static.routes'
 import { UPLOAD_VIDEO_DIR } from './constants/dir'
 import { MongoClient } from 'mongodb'
 import { config } from 'dotenv'
+import tweetsRouter from './routes/tweets.routes'
 
 config()
 const app = express()
@@ -18,6 +19,8 @@ initFolder()
 // app.use(express.json()) //app handler
 databaseService.connect().then(() => {
   databaseService.indexUsers()
+  databaseService.indexRefreshTokens()
+  databaseService.indexFollowers()
 })
 
 // databaseService.connect()
@@ -29,6 +32,7 @@ app.get('/', (req, res) => {
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
 app.use('/static', staticRouter)
+app.use('/tweets', tweetsRouter)
 // app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 
 //----------------------------------------------------------demo choi thôi

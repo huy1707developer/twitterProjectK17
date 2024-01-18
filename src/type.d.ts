@@ -1,4 +1,4 @@
-import { TokenPayload } from './models/requests/User.request'
+import { TokenPayload } from './models/requests/User.requests'
 import { Request } from 'express'
 //file này để định nghĩa những module cần thiết
 //vd express cũng là một trong những module

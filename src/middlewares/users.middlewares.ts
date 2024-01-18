@@ -16,7 +16,7 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import { verifyToken } from '~/utils/jwt'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { ObjectId } from 'mongodb'
-import { TokenPayload } from '~/models/requests/User.request'
+import { TokenPayload } from '~/models/requests/User.requests'
 import { UserVerifyStatus } from '~/constants/enums'
 import { REGEX_USERNAME } from '~/constants/regex'
 

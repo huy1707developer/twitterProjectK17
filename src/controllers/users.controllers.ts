@@ -14,7 +14,7 @@ import {
   UpdateMeReqBody,
   VerifyEmailReqBody,
   getProfileReqParams
-} from '~/models/requests/User.request'
+} from '~/models/requests/User.requests'
 import { ObjectId } from 'mongodb'
 import { USERS_MESSAGES } from '~/constants/messages'
 import databaseService from '~/services/database.services'

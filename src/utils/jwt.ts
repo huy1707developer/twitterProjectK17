@@ -1,7 +1,7 @@
 // đây là để kí tên
 import { config } from 'dotenv'
 import jwt from 'jsonwebtoken'
-import { TokenPayload } from '~/models/requests/User.request'
+import { TokenPayload } from '~/models/requests/User.requests'
 config()
 
 export const signToken = ({
